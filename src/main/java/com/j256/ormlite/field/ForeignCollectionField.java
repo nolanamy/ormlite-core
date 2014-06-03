@@ -57,6 +57,13 @@ public @interface ForeignCollectionField {
 	boolean eager() default false;
 
 	/**
+	 * Set to true if the collection is a an eazy collection where all of the results should be retrieved and cached
+	 * only when needed. Default is false (lazy) when the results will not be retrieved until you ask for the
+	 * iterator from the collection.
+	 */
+	boolean eazy() default false;
+
+	/**
 	 * @deprecated Should use {@link #maxEagerLevel()}
 	 */
 	@Deprecated

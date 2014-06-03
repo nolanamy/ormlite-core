@@ -62,6 +62,7 @@ public class DatabaseFieldConfig {
 	// foreign collection field information
 	private boolean foreignCollection;
 	private boolean foreignCollectionEager;
+	private boolean foreignCollectionEazy;
 	private int foreignCollectionMaxEagerLevel = DEFAULT_MAX_EAGER_FOREIGN_COLLECTION_LEVEL;
 	private String foreignCollectionColumnName;
 	private String foreignCollectionOrderColumnName;
@@ -390,6 +391,14 @@ public class DatabaseFieldConfig {
 		this.foreignCollectionEager = foreignCollectionEager;
 	}
 
+	public boolean isForeignCollectionEazy() {
+		return foreignCollectionEazy;
+	}
+
+	public void setForeignCollectionEazy(boolean foreignCollectionEazy) {
+		this.foreignCollectionEazy = foreignCollectionEazy;
+	}
+
 	public int getForeignCollectionMaxEagerLevel() {
 		return foreignCollectionMaxEagerLevel;
 	}
@@ -698,6 +707,7 @@ public class DatabaseFieldConfig {
 		}
 		config.foreignCollection = true;
 		config.foreignCollectionEager = foreignCollection.eager();
+		config.foreignCollectionEazy = foreignCollection.eazy();
 		@SuppressWarnings("deprecation")
 		int maxEagerLevel = foreignCollection.maxEagerForeignCollectionLevel();
 		if (maxEagerLevel != ForeignCollectionField.MAX_EAGER_LEVEL) {

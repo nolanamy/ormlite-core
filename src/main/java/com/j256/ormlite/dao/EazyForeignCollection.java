@@ -2,7 +2,6 @@ package com.j256.ormlite.dao;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -17,10 +16,10 @@ import com.j256.ormlite.support.DatabaseResults;
  * 
  * @author graywatson
  */
-public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> implements CloseableWrappedIterable<T>,
+public class EazyForeignCollection<T, ID> extends BaseForeignCollection<T, ID> implements CloseableWrappedIterable<T>,
 		Serializable {
 
-	private static final long serialVersionUID = -2523335606983317721L;
+	private static final long serialVersionUID = -2523335606993317721L;
 
 	private List<T> results;
 
@@ -29,18 +28,19 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	 * {@link Dao#assignEmptyForeignCollection(Object, String)} or {@link Dao#getEmptyForeignCollection(String)} methods
 	 * instead.
 	 */
-	public EagerForeignCollection(Dao<T, ID> dao, Object parent, Object parentId, FieldType foreignFieldType,
-			String orderColumn, boolean orderAscending) throws SQLException {
+	public EazyForeignCollection(Dao<T, ID> dao, Object parent, Object parentId, FieldType foreignFieldType,
+			String orderColumn, boolean orderAscending) {
 		super(dao, parent, parentId, foreignFieldType, orderColumn, orderAscending);
-		if (parentId == null) {
-			/*
-			 * If we have no field value then just create an empty list. This is for when we need to create an empty
-			 * eager collection.
-			 */
-			results = new ArrayList<T>();
-		} else {
-			// go ahead and do the query if eager
-			results = dao.query(getPreparedQuery());
+	}
+
+	public void loadIfNull() {
+		if (results == null) {
+			try {
+				refreshCollection();
+			} catch (SQLException e) {
+				// demote to runtime
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
@@ -65,6 +65,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	}
 
 	public CloseableIterator<T> iteratorThrow(int flags) {
+		loadIfNull();
 		// we have to wrap the iterator since we are returning the List's iterator
 		return new CloseableIterator<T>() {
 			private int offset = -1;
@@ -170,39 +171,46 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	}
 
 	public boolean isEager() {
-		return true;
-	}
-
-	public boolean isEazy() {
 		return false;
 	}
 
+	public boolean isEazy() {
+		return true;
+	}
+
 	public int size() {
+		loadIfNull();
 		return results.size();
 	}
 
 	public boolean isEmpty() {
+		loadIfNull();
 		return results.isEmpty();
 	}
 
 	public boolean contains(Object o) {
+		loadIfNull();
 		return results.contains(o);
 	}
 
 	public boolean containsAll(Collection<?> c) {
+		loadIfNull();
 		return results.containsAll(c);
 	}
 
 	public Object[] toArray() {
+		loadIfNull();
 		return results.toArray();
 	}
 
 	public <E> E[] toArray(E[] array) {
+		loadIfNull();
 		return results.toArray(array);
 	}
 
 	@Override
 	public boolean add(T data) {
+		loadIfNull();
 		if (results.add(data)) {
 			return super.add(data);
 		} else {
@@ -212,6 +220,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 
 	@Override
 	public boolean addAll(Collection<? extends T> collection) {
+		loadIfNull();
 		if (results.addAll(collection)) {
 			return super.addAll(collection);
 		} else {
@@ -221,6 +230,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 
 	@Override
 	public boolean remove(Object data) {
+		loadIfNull();
 		if (!results.remove(data) || dao == null) {
 			return false;
 		}
@@ -236,6 +246,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 
 	@Override
 	public boolean removeAll(Collection<?> collection) {
+		loadIfNull();
 		boolean changed = false;
 		for (Object data : collection) {
 			if (remove(data)) {
@@ -252,6 +263,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	}
 
 	public int updateAll() throws SQLException {
+		loadIfNull();
 		int updatedC = 0;
 		for (T data : results) {
 			updatedC += dao.update(data);
@@ -260,6 +272,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	}
 
 	public int refreshAll() throws SQLException {
+		loadIfNull();
 		int updatedC = 0;
 		for (T data : results) {
 			updatedC += dao.refresh(data);
@@ -277,11 +290,12 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof EagerForeignCollection)) {
+		loadIfNull();
+		if (!(obj instanceof EazyForeignCollection)) {
 			return false;
 		}
 		@SuppressWarnings("rawtypes")
-		EagerForeignCollection other = (EagerForeignCollection) obj;
+		EazyForeignCollection other = (EazyForeignCollection) obj;
 		return results.equals(other.results);
 	}
 
@@ -290,6 +304,7 @@ public class EagerForeignCollection<T, ID> extends BaseForeignCollection<T, ID> 
 	 */
 	@Override
 	public int hashCode() {
+		loadIfNull();
 		return results.hashCode();
 	}
 }

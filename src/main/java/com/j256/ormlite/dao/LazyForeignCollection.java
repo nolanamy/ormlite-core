@@ -108,6 +108,10 @@ public class LazyForeignCollection<T, ID> extends BaseForeignCollection<T, ID> i
 		return false;
 	}
 
+	public boolean isEazy() {
+		return false;
+	}
+
 	public int size() {
 		CloseableIterator<T> iterator = iterator();
 		try {

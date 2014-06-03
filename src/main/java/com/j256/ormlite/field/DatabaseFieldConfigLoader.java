@@ -106,6 +106,7 @@ public class DatabaseFieldConfigLoader {
 
 	private static final String FIELD_NAME_FOREIGN_COLLECTION = "foreignCollection";
 	private static final String FIELD_NAME_FOREIGN_COLLECTION_EAGER = "foreignCollectionEager";
+	private static final String FIELD_NAME_FOREIGN_COLLECTION_EAZY = "foreignCollectionEazy";
 	private static final String FIELD_NAME_MAX_EAGER_FOREIGN_COLLECTION_LEVEL_OLD = "maxEagerForeignCollectionLevel";
 	private static final String FIELD_NAME_MAX_EAGER_FOREIGN_COLLECTION_LEVEL = "foreignCollectionMaxEagerLevel";
 	private static final String FIELD_NAME_FOREIGN_COLLECTION_COLUMN_NAME = "foreignCollectionColumnName";
@@ -262,6 +263,10 @@ public class DatabaseFieldConfigLoader {
 			writer.append(FIELD_NAME_FOREIGN_COLLECTION_EAGER).append('=').append("true");
 			writer.newLine();
 		}
+		if (config.isForeignCollectionEazy()) {
+			writer.append(FIELD_NAME_FOREIGN_COLLECTION_EAZY).append('=').append("true");
+			writer.newLine();
+		}
 		if (config.getForeignCollectionMaxEagerLevel() != DEFAULT_MAX_EAGER_FOREIGN_COLLECTION_LEVEL) {
 			writer.append(FIELD_NAME_MAX_EAGER_FOREIGN_COLLECTION_LEVEL)
 					.append('=')
@@ -401,6 +406,8 @@ public class DatabaseFieldConfigLoader {
 			config.setForeignCollection(Boolean.parseBoolean(value));
 		} else if (field.equals(FIELD_NAME_FOREIGN_COLLECTION_EAGER)) {
 			config.setForeignCollectionEager(Boolean.parseBoolean(value));
+        } else if (field.equals(FIELD_NAME_FOREIGN_COLLECTION_EAZY)) {
+            config.setForeignCollectionEazy(Boolean.parseBoolean(value));
 		} else if (field.equals(FIELD_NAME_MAX_EAGER_FOREIGN_COLLECTION_LEVEL_OLD)) {
 			config.setForeignCollectionMaxEagerLevel(Integer.parseInt(value));
 		} else if (field.equals(FIELD_NAME_MAX_EAGER_FOREIGN_COLLECTION_LEVEL)) {

@@ -16,6 +16,7 @@ import com.j256.ormlite.dao.BaseForeignCollection;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.dao.EagerForeignCollection;
+import com.j256.ormlite.dao.EazyForeignCollection;
 import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.dao.LazyForeignCollection;
 import com.j256.ormlite.dao.ObjectCache;
@@ -791,6 +792,13 @@ public class FieldType {
 		}
 		@SuppressWarnings("unchecked")
 		Dao<FT, FID> castDao = (Dao<FT, FID>) foreignDao;
+
+		if (fieldConfig.isForeignCollectionEazy()) {
+			// we know this won't go recursive so no need for the counters
+			return new EazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
+					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
+		}
+
 		if (!fieldConfig.isForeignCollectionEager()) {
 			// we know this won't go recursive so no need for the counters
 			return new LazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
