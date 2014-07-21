@@ -13,3 +13,7 @@ Sources can be found online via Github:
 
 Enjoy,
 Gray Watson
+
+Build:
+
+    mvn package -Dmaven.test.skip=true
