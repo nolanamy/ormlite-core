@@ -39,8 +39,8 @@ public class LazyForeignCollection<T, ID> extends BaseForeignCollection<T, ID> i
 	 * instead.
 	 */
 	public LazyForeignCollection(Dao<T, ID> dao, Object parent, Object parentId, FieldType foreignFieldType,
-			String orderColumn, boolean orderAscending) {
-		super(dao, parent, parentId, foreignFieldType, orderColumn, orderAscending);
+			String orderColumn, boolean orderAscending, String deletedColumn) {
+		super(dao, parent, parentId, foreignFieldType, orderColumn, orderAscending, deletedColumn);
 	}
 
 	/**

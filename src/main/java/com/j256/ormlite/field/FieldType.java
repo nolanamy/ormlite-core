@@ -796,13 +796,15 @@ public class FieldType {
 		if (fieldConfig.isForeignCollectionEazy()) {
 			// we know this won't go recursive so no need for the counters
 			return new EazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
+					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending(),
+					fieldConfig.getForeignCollectionDeletedColumn());
 		}
 
 		if (!fieldConfig.isForeignCollectionEager()) {
 			// we know this won't go recursive so no need for the counters
 			return new LazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
+					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending(),
+					fieldConfig.getForeignCollectionDeletedColumn());
 		}
 
 		LevelCounters levelCounters = threadLevelCounters.get();
@@ -813,12 +815,14 @@ public class FieldType {
 		if (levelCounters.foreignCollectionLevel >= levelCounters.foreignCollectionLevelMax) {
 			// then return a lazy collection instead
 			return new LazyForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
+					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending(),
+					fieldConfig.getForeignCollectionDeletedColumn());
 		}
 		levelCounters.foreignCollectionLevel++;
 		try {
 			return new EagerForeignCollection<FT, FID>(castDao, parent, id, foreignFieldType,
-					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending());
+					fieldConfig.getForeignCollectionOrderColumnName(), fieldConfig.isForeignCollectionOrderAscending(),
+					fieldConfig.getForeignCollectionDeletedColumn());
 		} finally {
 			levelCounters.foreignCollectionLevel--;
 		}

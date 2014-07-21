@@ -10,6 +10,7 @@ import com.j256.ormlite.misc.IOUtils;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.stmt.mapped.MappedPreparedStmt;
 
 /**
@@ -33,15 +34,17 @@ public abstract class BaseForeignCollection<T, ID> implements ForeignCollection<
 	private transient PreparedQuery<T> preparedQuery;
 	private transient final String orderColumn;
 	private transient final boolean orderAscending;
+	private transient final String deletedColumn;
 	private transient final Object parent;
 
 	protected BaseForeignCollection(Dao<T, ID> dao, Object parent, Object parentId, FieldType foreignFieldType,
-			String orderColumn, boolean orderAscending) {
+			String orderColumn, boolean orderAscending, String deletedColumn) {
 		this.dao = dao;
 		this.foreignFieldType = foreignFieldType;
 		this.parentId = parentId;
 		this.orderColumn = orderColumn;
 		this.orderAscending = orderAscending;
+		this.deletedColumn = deletedColumn;
 		this.parent = parent;
 	}
 
@@ -168,7 +171,11 @@ public abstract class BaseForeignCollection<T, ID> implements ForeignCollection<
 			if (orderColumn != null) {
 				qb.orderBy(orderColumn, orderAscending);
 			}
-			preparedQuery = qb.where().eq(foreignFieldType.getColumnName(), fieldArg).prepare();
+			Where<T, ID> where = qb.where();
+			if (deletedColumn != null) {
+				where = where.isNull(deletedColumn).or().eq(deletedColumn, false).and(); // false or null will fly
+			}
+			preparedQuery = where.eq(foreignFieldType.getColumnName(), fieldArg).prepare();
 			if (preparedQuery instanceof MappedPreparedStmt) {
 				@SuppressWarnings("unchecked")
 				MappedPreparedStmt<T, Object> mappedStmt = ((MappedPreparedStmt<T, Object>) preparedQuery);

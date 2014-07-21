@@ -64,6 +64,11 @@ public @interface ForeignCollectionField {
 	boolean eazy() default false;
 
 	/**
+	 * Set to a columnName to filter out collection items having deletedColumn = `true`
+	 */
+	String deletedColumn() default "";
+
+	/**
 	 * @deprecated Should use {@link #maxEagerLevel()}
 	 */
 	@Deprecated

@@ -29,8 +29,8 @@ public class EazyForeignCollection<T, ID> extends BaseForeignCollection<T, ID> i
 	 * instead.
 	 */
 	public EazyForeignCollection(Dao<T, ID> dao, Object parent, Object parentId, FieldType foreignFieldType,
-			String orderColumn, boolean orderAscending) {
-		super(dao, parent, parentId, foreignFieldType, orderColumn, orderAscending);
+			String orderColumn, boolean orderAscending, String deletedColumn) {
+		super(dao, parent, parentId, foreignFieldType, orderColumn, orderAscending, deletedColumn);
 	}
 
 	public void loadIfNull() {

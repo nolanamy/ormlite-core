@@ -63,6 +63,7 @@ public class DatabaseFieldConfig {
 	private boolean foreignCollection;
 	private boolean foreignCollectionEager;
 	private boolean foreignCollectionEazy;
+	private String foreignCollectionDeletedColumn;
 	private int foreignCollectionMaxEagerLevel = DEFAULT_MAX_EAGER_FOREIGN_COLLECTION_LEVEL;
 	private String foreignCollectionColumnName;
 	private String foreignCollectionOrderColumnName;
@@ -399,6 +400,14 @@ public class DatabaseFieldConfig {
 		this.foreignCollectionEazy = foreignCollectionEazy;
 	}
 
+	public String getForeignCollectionDeletedColumn() {
+		return foreignCollectionDeletedColumn;
+	}
+
+	public void setForeignCollectionDeletedColumn(String foreignCollectionDeletedColumn) {
+		this.foreignCollectionDeletedColumn = foreignCollectionDeletedColumn;
+	}
+
 	public int getForeignCollectionMaxEagerLevel() {
 		return foreignCollectionMaxEagerLevel;
 	}
@@ -708,6 +717,7 @@ public class DatabaseFieldConfig {
 		config.foreignCollection = true;
 		config.foreignCollectionEager = foreignCollection.eager();
 		config.foreignCollectionEazy = foreignCollection.eazy();
+		config.foreignCollectionDeletedColumn = valueIfNotBlank(foreignCollection.deletedColumn());
 		@SuppressWarnings("deprecation")
 		int maxEagerLevel = foreignCollection.maxEagerForeignCollectionLevel();
 		if (maxEagerLevel != ForeignCollectionField.MAX_EAGER_LEVEL) {
